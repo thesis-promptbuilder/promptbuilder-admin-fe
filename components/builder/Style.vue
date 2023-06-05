@@ -4,7 +4,7 @@
       :text="`Delete ${parentName}`"
       color="error"
       size="large"
-      class="text-text-1 font-weight-bold"
+      class="text-text-1"
       @click="showDeleteDialog = true"
     >
       Delete {{ parentName }}</v-btn
@@ -25,7 +25,7 @@
     ></v-btn>
   </div>
   <div class="mt-4 d-flex">
-    <div class="w-25 mr-2">
+    <div class="w-20 mx-1">
       <div
         v-for="(image, index) in listImageBuilderValue0"
         :key="`${index}_image_col0`"
@@ -36,7 +36,7 @@
         />
       </div>
     </div>
-    <div class="w-25 mr-2">
+    <div class="w-20 mx-1">
       <div
         v-for="(image, index) in listImageBuilderValue1"
         :key="`${index}_image_col1`"
@@ -47,7 +47,7 @@
         />
       </div>
     </div>
-    <div class="w-25 mr-2">
+    <div class="w-20 mx-1">
       <div
         v-for="(image, index) in listImageBuilderValue2"
         :key="`${index}_image_col2`"
@@ -58,10 +58,21 @@
         />
       </div>
     </div>
-    <div class="w-25 mr-2">
+    <div class="w-20 mx-1">
       <div
         v-for="(image, index) in listImageBuilderValue3"
         :key="`${index}_image_col3`"
+      >
+        <BuilderImage
+          :builder-value="image"
+          @delete-builder-value="handleGetBuilderValue(parentName)"
+        />
+      </div>
+    </div>
+    <div class="w-20 mx-1">
+      <div
+        v-for="(image, index) in listImageBuilderValue4"
+        :key="`${index}_image_col4`"
       >
         <BuilderImage
           :builder-value="image"
@@ -192,7 +203,7 @@ async function handleGetBuilderValue(builderType) {
 function getListImageBuilderValue(items, colNumber) {
   if (!items) return;
   return items.filter((image, index) => {
-    if (index % 4 === colNumber) {
+    if (index % 5 === colNumber) {
       return image;
     }
   });
@@ -204,12 +215,14 @@ function getListImageByModule() {
   listImageBuilderValue1.value = getListImageBuilderValue(listBuilderValue, 1);
   listImageBuilderValue2.value = getListImageBuilderValue(listBuilderValue, 2);
   listImageBuilderValue3.value = getListImageBuilderValue(listBuilderValue, 3);
+  listImageBuilderValue4.value = getListImageBuilderValue(listBuilderValue, 4);
 }
 
 const listImageBuilderValue0 = ref([]);
 const listImageBuilderValue1 = ref([]);
 const listImageBuilderValue2 = ref([]);
 const listImageBuilderValue3 = ref([]);
+const listImageBuilderValue4 = ref([]);
 
 watch(
   () => props.parentName,

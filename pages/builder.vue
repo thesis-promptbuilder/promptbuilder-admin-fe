@@ -99,6 +99,20 @@
             </v-btn>
           </div>
         </template>
+        <template v-slot:selection="{ item }">
+          <span>{{ item.title }}</span>
+          <span>&nbsp;</span>
+          <span class="text-text-2">
+            {{
+              paramStore.listBuilderType.filter((i) => i.name === item.title)
+                .length
+                ? paramStore.listBuilderType.filter(
+                    (i) => i.name === item.title
+                  )[0].short_name
+                : ""
+            }}
+          </span>
+        </template>
       </v-autocomplete>
     </div>
   </div>
@@ -116,15 +130,24 @@
   <v-dialog v-model="showDialog" width="500px" persistent>
     <v-card>
       <v-card-text>
-        <div class="text-h6 font-weight-bold">{{ suggestButton }}</div>
+        <div class="text-h6">{{ suggestButton }}</div>
         <v-text-field
           v-model="newBuilderType"
-          class="mt-4"
           variant="outlined"
           density="comfortable"
           hide-details
           bg-color="bg-2"
-          @keydown.prevent.enter="handleCreateBuilderType"
+        ></v-text-field>
+        <div class="text-h6 mt-4" v-if="suggestButton === 'Param'">
+          Short name
+        </div>
+        <v-text-field
+          v-if="suggestButton === 'Param'"
+          v-model="newShortName"
+          variant="outlined"
+          density="comfortable"
+          hide-details
+          bg-color="bg-2"
         ></v-text-field>
       </v-card-text>
       <v-card-actions class="d-flex justify-end mr-4 mb-2">
@@ -133,6 +156,7 @@
           @click="
             showDialog = false;
             newBuilderType = '';
+            newShortName = '';
           "
         >
           Cancel
@@ -159,6 +183,7 @@ const paramStore = useParamStore();
 const suggestButton = ref("Style");
 const showDialog = ref(false);
 const newBuilderType = ref("");
+const newShortName = ref("");
 
 const config = useRuntimeConfig();
 const baseURL = `${config.public.baseURL}/builder_type`;
@@ -172,12 +197,14 @@ async function handleCreateBuilderType() {
     body: {
       parent_type: suggestButton.value,
       name: newBuilderType.value,
+      short_name: newShortName.value,
     },
   });
   const { result, code, msg } = data.value;
   if (code === CODE_SUCCESS) {
     showDialog.value = false;
     newBuilderType.value = "";
+    newShortName.value = "";
     isLoadingCreate.value = false;
 
     if (suggestButton.value === "Style") {

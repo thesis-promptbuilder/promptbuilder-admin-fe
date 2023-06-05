@@ -2,16 +2,15 @@
   <div style="position: relative" class="mb-4 pointer">
     <v-img :src="`https://${builderValue?.image_src}`" cover class="img" />
     <div
-      class="d-flex align-center justify-space-between bg-primary-2 pa-2 px-4"
-      style="border-radius: 0 0 5px 5px"
+      class="d-flex align-center justify-space-between bg-bg-2 pa-2 px-4"
+      style="border-radius: 0 0 5px 5px; height: 64px"
     >
       <div>{{ builderValue?.name }}</div>
       <v-btn
         variant="flat"
-        size="small"
         color="error"
         text="Delete"
-        class="text-text-1 font-weight-bold"
+        class="text-text-1"
         :loading="isLoadingDelete"
         @click="handleDeleteBuilderValue"
       ></v-btn>
