@@ -11,3 +11,24 @@ export function getCookie(name) {
 
   return null;
 }
+
+export const actions = [
+  {
+    name: "Edit",
+    value: "edit",
+    icon: "mdi-pencil",
+    color: "info",
+  },
+  // {
+  //   name: "Ban",
+  //   value: "ban",
+  //   icon: "mdi-cancel",
+  //   color: "warning",
+  // },
+  {
+    name: "Delete",
+    value: "delete",
+    icon: "mdi-delete",
+    color: "error",
+  },
+];
