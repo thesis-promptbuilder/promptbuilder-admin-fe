@@ -1,65 +1,76 @@
 <template>
-  <div class="width-100">
-    <div class="text-h4 font-weight-bold">Log In</div>
-    <div class="mt-1">Admin management</div>
-    <div class="mt-7">Email</div>
-    <v-text-field
-      v-model="gmail"
-      class="mt-1"
-      variant="outlined"
-      hide-details
-      prepend-inner-icon="mdi-email-outline"
-      placeholder="xxx@gmail.com"
-    ></v-text-field>
-    <div class="mt-4">Password</div>
-    <v-text-field
-      v-model="password"
-      class="mt-1"
-      variant="outlined"
-      hide-details
-      type="password"
-      prepend-inner-icon="mdi-panda"
-      placeholder="Abc@123"
-    ></v-text-field>
-    <v-btn
-      block
-      class="mt-8 font-weight-bold text-text-1"
-      size="x-large"
-      variant="flat"
-      color="primary"
-      text="Log In"
-      @click="handleLogin"
-    />
+  <div
+    class="d-flex justify-center align-center flex-column"
+    style="height: 100vh"
+  >
+    <div style="width: 500px" class="bg-bg-1 rounded-lg pa-8">
+      <div class="text-h4 font-weight-bold d-flex justify-center">
+        Admin Dashboard
+      </div>
+      <v-text-field
+        v-model.trim="gmail"
+        variant="outlined"
+        label="Email"
+        class="mt-6"
+        prepend-inner-icon="mdi-email-outline"
+        placeholder="xxx@gmail.com"
+      ></v-text-field>
+      <v-text-field
+        v-model.trim="password"
+        variant="outlined"
+        label="Password"
+        type="password"
+        prepend-inner-icon="mdi-panda"
+        placeholder="Abc@123"
+      ></v-text-field>
+      <v-btn
+        variant="flat"
+        color="primary"
+        text="Login"
+        block
+        size="x-large"
+        class="text-none font-weight-bold"
+        :loading="isLoadingLogin"
+        @click="handleLogin"
+      ></v-btn>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { sha256 } from "ohash";
 import { useUserStore } from "~/stores/User";
+const config = useRuntimeConfig();
+const baseURL = `${config.public.baseURL}`;
 
 definePageMeta({
   layout: "authen",
 });
+
 const gmail = ref("");
 const password = ref("");
-const config = useRuntimeConfig();
-const baseURL = `${config.public.baseURL}/user`;
 
 const userStore = useUserStore();
 
+const isLoadingLogin = ref(false);
+
 async function handleLogin() {
-  const { data } = await useFetch(`${baseURL}/login`, {
+  isLoadingLogin.value = true;
+  const { data } = await useFetch(`${baseURL}/user/login`, {
     method: "POST",
     body: {
       gmail: gmail,
       password: sha256(password.value),
     },
   });
+  isLoadingLogin.value = false;
+  if (!data.value) return;
   const { result, code, msg } = data.value;
   if (code === CODE_SUCCESS) {
-    userStore.setUser({ gmail: gmail.value });
-    window?.localStorage.setItem("thesis-token", result["access_token"]);
-    navigateTo({ path: "/builder" });
+    userStore.setUser(result);
+    document.cookie = `admin_token=${result["access_token"]}`;
+    document.cookie = `admin_exp=${result["expire_time"]}`;
+    navigateTo({ path: "/" });
   }
 }
 </script>
