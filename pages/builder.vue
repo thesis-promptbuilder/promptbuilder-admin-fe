@@ -3,12 +3,12 @@
     <span class="text-primary-2">Builder</span> Management
   </div>
   <div class="mt-4">
-    <div class="d-flex align-center w-25">
+    <div class="d-flex align-center w-50">
       Style
       <span class="mx-2">-</span>
       <v-select
         v-model="builderTypeName"
-        :items="styleStore.listBuilderType.map((item) => item.name)"
+        :items="styleStore.listBuilderType.map((item) => item.name).sort()"
         variant="outlined"
         density="compact"
         bg-color="bg-1"
@@ -26,6 +26,14 @@
           </div>
         </template>
       </v-select>
+      <v-btn
+        class="ml-2"
+        variant="flat"
+        color="error"
+        prepend-icon="mdi-delete"
+        text="Delete"
+        @click="isShowDeleteBuilderType = true"
+      ></v-btn>
     </div>
     <div class="mt-4">
       <div v-if="isLoadingGetBuilderValue" class="d-flex justify-center">
@@ -82,6 +90,12 @@
                         :color="action.color"
                         :prepend-icon="action.icon"
                         block
+                        :loading="
+                          action.value === 'delete'
+                            ? isLoadingDeleteBuilderValue
+                            : false
+                        "
+                        @click="handleAction(action, builderValue)"
                       >
                       </v-btn>
                     </v-list-item>
@@ -210,6 +224,28 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+  <v-dialog v-model="isShowDeleteBuilderType" width="auto" persistent="">
+    <v-card>
+      <v-card-text style="min-width: 30vw">
+        <div class="text-h6 font-weight-bold">
+          <span class="text-error">Delete builder type</span>
+        </div>
+        <div>
+          Are you sure to delete
+          <span class="font-weight-bold">{{ builderTypeName }}</span
+          >?
+        </div>
+      </v-card-text>
+      <v-card-actions class="d-flex justify-end">
+        <v-btn variant="text" @click="isShowDeleteBuilderType = false">
+          Cancel
+        </v-btn>
+        <v-btn variant="flat" color="error" @click="handleDeleteBuilderType">
+          Delete
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
   <v-file-input
     v-model.trim="file"
     id="file"
@@ -242,7 +278,9 @@ async function handleGetBuilderType() {
   const { result, code, msg } = data.value;
   if (code === CODE_SUCCESS) {
     styleStore.setListBuilderType(result);
-    builderTypeName.value = styleStore.listBuilderType[0].name;
+    builderTypeName.value = styleStore.listBuilderType[0]
+      ? styleStore.listBuilderType[0].name
+      : "";
   }
 }
 
@@ -252,9 +290,27 @@ onMounted(() => {
   });
 });
 
+const isShowDeleteBuilderType = ref(false);
+async function handleDeleteBuilderType() {
+  const builderTypeId = styleStore.listBuilderType.filter(
+    (item) => item.name === builderTypeName.value
+  )[0]["id"];
+  const { data } = await useFetch(`${baseURL}/builder_type/${builderTypeId}`, {
+    method: "DELETE",
+  });
+  if (!data.value) return;
+  const { result, code, msg } = data.value;
+  if (code === CODE_SUCCESS) {
+    useNuxtApp().$toast.success("Delete successfully!");
+    isShowDeleteBuilderType.value = false;
+    handleGetBuilderType();
+  }
+}
+
 const isShowCreateBuilderType = ref(false);
 const isLoadingCreateBuilderType = ref(false);
 const builderTypeNewName = ref("");
+
 async function handleCreateBuilderType() {
   isLoadingCreateBuilderType.value = true;
   const { data } = await useFetch(`${baseURL}/builder_type`, {
@@ -321,6 +377,30 @@ async function handleCreateBuilderValue() {
     builderValueName.value = "";
     file.value = null;
     fileImage.value = null;
+    handleGetBuilderValue();
+  }
+}
+
+function handleAction(action, builderValue) {
+  const builderValueId = builderValue.id;
+  if (action.value === "delete") {
+    handleDeleteBuilderValue(builderValueId);
+  }
+}
+
+const isLoadingDeleteBuilderValue = ref(false);
+async function handleDeleteBuilderValue(builderValueId) {
+  isLoadingDeleteBuilderValue.value = true;
+  const { data } = await useFetch(
+    `${baseURL}/builder_value/${builderValueId}`,
+    { method: "DELETE" }
+  );
+  isLoadingDeleteBuilderValue.value = false;
+  if (!data.value) return;
+  const { result, code, msg } = data.value;
+  if (code === CODE_SUCCESS) {
+    useNuxtApp().$toast.success("Delete successfully!");
+    page.value = 1;
     handleGetBuilderValue();
   }
 }
