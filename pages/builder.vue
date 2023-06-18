@@ -507,6 +507,7 @@ watch(
 watch(
   () => builderTypeName.value,
   () => {
+    page.value = 1;
     handleGetBuilderValue();
   }
 );
