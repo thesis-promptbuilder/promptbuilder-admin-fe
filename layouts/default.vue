@@ -3,7 +3,7 @@
     <v-navigation-drawer>
       <v-list>
         <v-list-item
-          prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
+          prepend-avatar="https://thh297-s3-image.s3.ap-southeast-1.amazonaws.com/user/tranhuuhuy297%40gmail.com/cat.jpg"
           :title="`@${userStore.username}`"
           :subtitle="userStore.gmail"
         ></v-list-item>

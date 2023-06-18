@@ -6,6 +6,8 @@ export const useUserStore = defineStore("userStore", {
     gmail: "",
     id: "",
     image_src: "",
+    listUser: [],
+    isLoadedListUser: false,
   }),
   getters: {},
   actions: {
@@ -14,6 +16,10 @@ export const useUserStore = defineStore("userStore", {
       this.gmail = user.gmail;
       this.id = user.id;
       this.image_src = user.image_src;
+    },
+    setListUser(listUser) {
+      this.isLoadedListUser = true;
+      this.listUser = listUser;
     },
   },
 });

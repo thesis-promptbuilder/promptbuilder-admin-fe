@@ -107,7 +107,7 @@
         </v-table>
         <v-pagination
           v-model="page"
-          :length="10"
+          :length="length"
           density="comfortable"
           class="mt-1"
           active-color="primary"
@@ -121,12 +121,12 @@
   </div>
   <v-dialog v-model="isShowCreateBuilderValue" width="auto" persistent>
     <v-card>
-      <v-card-text style="min-width: 30vw">
+      <v-card-text style="min-width: 25vw">
         <div class="text-h6 font-weight-bold">
           <span class="text-info">Create builder value</span>
         </div>
         <v-text-field
-          v-model="builderTypeName"
+          v-model.trim="builderTypeName"
           readonly
           class="mt-4"
           variant="outlined"
@@ -135,7 +135,7 @@
           bg-color="bg-3"
         ></v-text-field>
         <v-text-field
-          v-model="builderValueName"
+          v-model.trim="builderValueName"
           autofocus=""
           class="mt-4"
           variant="outlined"
@@ -187,6 +187,51 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+  <v-dialog v-model="isShowUpdateBuilderValue" width="auto" persistent>
+    <v-card>
+      <v-card-text style="min-width: 25vw">
+        <div class="text-h6 font-weight-bold">
+          <span class="text-info">Update builder value</span>
+        </div>
+        <v-text-field
+          v-model.trim="builderTypeName"
+          readonly
+          class="mt-4"
+          variant="outlined"
+          density="compact"
+          hide-details
+          bg-color="bg-3"
+        ></v-text-field>
+        <v-text-field
+          v-model.trim="builderValueNameUpdate"
+          autofocus=""
+          class="mt-4"
+          variant="outlined"
+          density="compact"
+          label="Name"
+          hide-details
+          bg-color="bg-1"
+          @keydown.prevent.enter="handleUpdateBuilderValue"
+        ></v-text-field>
+        <div
+          class="w-100 mt-4 rounded-lg d-flex justify-center align-center pointer"
+        >
+          <v-img
+            :src="`https://${selectedBuilderValue.image_src}`"
+            style="max-width: 50vw; max-height: 50vh"
+          ></v-img>
+        </div>
+      </v-card-text>
+      <v-card-actions class="d-flex justify-end">
+        <v-btn variant="text" @click="isShowUpdateBuilderValue = false">
+          Cancel
+        </v-btn>
+        <v-btn variant="flat" color="info" @click="handleUpdateBuilderValue">
+          Update
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
   <v-dialog v-model="isShowCreateBuilderType" width="auto" persistent="">
     <v-card>
       <v-card-text style="min-width: 30vw">
@@ -194,7 +239,7 @@
           <span class="text-info">Create builder type</span>
         </div>
         <v-text-field
-          v-model="builderTypeNewName"
+          v-model.trim="builderTypeNewName"
           autofocus
           class="mt-4"
           variant="outlined"
@@ -266,6 +311,10 @@ const parentType = ref("Style");
 const builderTypeName = ref("");
 
 async function handleGetBuilderType() {
+  if (styleStore.isLoadedBuilderType) {
+    listBuilderType.value = styleStore.listBuilderType;
+    return;
+  }
   const { data } = await useFetch(`${baseURL}/builder_type`, {
     method: "GET",
     params: {
@@ -278,9 +327,8 @@ async function handleGetBuilderType() {
   const { result, code, msg } = data.value;
   if (code === CODE_SUCCESS) {
     styleStore.setListBuilderType(result);
-    builderTypeName.value = styleStore.listBuilderType[0]
-      ? styleStore.listBuilderType[0].name
-      : "";
+    builderTypeName.value = "Artists";
+    styleStore.setListBuilderType(result);
   }
 }
 
@@ -337,7 +385,11 @@ const page = ref(1);
 const size = ref(10);
 const headers = ref(["Name", "Image", "Action"]);
 
+const length = ref(10);
+
+const isLoadingGetBuilderValue = ref(false);
 async function handleGetBuilderValue() {
+  isLoadingGetBuilderValue.value = true;
   const { data } = await useFetch(`${baseURL}/builder_value`, {
     method: "GET",
     params: {
@@ -346,10 +398,12 @@ async function handleGetBuilderValue() {
       builder_type: builderTypeName.value,
     },
   });
+  isLoadingGetBuilderValue.value = false;
   if (!data.value) return;
-  const { result, code, msg } = data.value;
+  const { result, count, code, msg } = data.value;
   if (code === CODE_SUCCESS) {
     styleStore.setListBuilderValue(builderTypeName.value, result);
+    length.value = parseInt(count / size.value) + 1;
   }
 }
 
@@ -381,10 +435,37 @@ async function handleCreateBuilderValue() {
   }
 }
 
+const selectedBuilderValue = ref(null);
 function handleAction(action, builderValue) {
+  selectedBuilderValue.value = builderValue;
   const builderValueId = builderValue.id;
+  if (action.value === "edit") {
+    builderValueNameUpdate.value = builderValue.name;
+    isShowUpdateBuilderValue.value = true;
+  }
   if (action.value === "delete") {
     handleDeleteBuilderValue(builderValueId);
+  }
+}
+
+const isShowUpdateBuilderValue = ref(false);
+const builderValueNameUpdate = ref("");
+async function handleUpdateBuilderValue() {
+  const { data } = await useFetch(
+    `${baseURL}/builder_value/${selectedBuilderValue.value.id}`,
+    {
+      method: "PUT",
+      body: {
+        name: builderValueNameUpdate.value,
+      },
+    }
+  );
+  if (!data.value) return;
+  const { result, code, msg } = data.value;
+  if (code === CODE_SUCCESS) {
+    isShowUpdateBuilderValue.value = false;
+    useNuxtApp().$toast.success("Update successfully!");
+    handleGetBuilderValue();
   }
 }
 
