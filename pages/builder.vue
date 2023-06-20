@@ -72,7 +72,7 @@
             >
               <td>{{ builderValue.name }}</td>
               <td class="d-flex justify-center pa-2" style="height: 250px">
-                <v-img :src="`https://${builderValue.image_src}`"></v-img>
+                <v-img :src="`${builderValue.image_src}`"></v-img>
               </td>
               <td>
                 <v-menu>
@@ -217,7 +217,7 @@
           class="w-100 mt-4 rounded-lg d-flex justify-center align-center pointer"
         >
           <v-img
-            :src="`https://${selectedBuilderValue.image_src}`"
+            :src="`${selectedBuilderValue.image_src}`"
             style="max-width: 50vw; max-height: 50vh"
           ></v-img>
         </div>

@@ -2,11 +2,22 @@
   <v-layout>
     <v-navigation-drawer>
       <v-list>
-        <v-list-item
-          prepend-avatar="https://thh297-s3-image.s3.ap-southeast-1.amazonaws.com/user/tranhuuhuy297%40gmail.com/cat.jpg"
-          :title="`@${userStore.username}`"
-          :subtitle="userStore.gmail"
-        ></v-list-item>
+        <v-list-item :title="`@${userStore.username}`" class="avatar">
+          <template #prepend>
+            <v-avatar color="info" class="mr-2">
+              <v-icon icon="mdi-account-circle"></v-icon>
+            </v-avatar>
+          </template>
+          <template #subtitle>
+            <span
+              style="word-break: break-all"
+              class="pointer"
+              @click="handleCopy"
+            >
+              {{ userStore.gmail }}
+            </span>
+          </template>
+        </v-list-item>
       </v-list>
       <v-divider></v-divider>
       <v-list mandatory>
@@ -80,5 +91,10 @@ function handleLogout() {
   setTimeout(() => {
     navigateTo("/login");
   }, 200);
+}
+
+function handleCopy() {
+  navigator.clipboard.writeText(userStore.gmail);
+  useNuxtApp().$toast.success("Copy email");
 }
 </script>
