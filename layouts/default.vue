@@ -74,11 +74,11 @@ const listItems = [
     route: "/builder",
     prependIcon: "mdi-wrench-outline",
   },
-  {
-    title: "Statistics",
-    route: "/statistics",
-    prependIcon: "mdi-chart-line",
-  },
+  // {
+  //   title: "Statistics",
+  //   route: "/statistics",
+  //   prependIcon: "mdi-chart-line",
+  // },
 ];
 
 function handleActionItem(item) {
