@@ -347,6 +347,9 @@ async function handleDeleteBuilderType() {
   )[0]["id"];
   const { data } = await useFetch(`${baseURL}/builder_type/${builderTypeId}`, {
     method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${getCookie("admin_token")}`,
+    },
   });
   if (!data.value) return;
   const { result, code, msg } = data.value;
@@ -369,6 +372,9 @@ async function handleCreateBuilderType() {
       parent: parentType.value,
       name: builderTypeNewName.value,
       short_name: "",
+    },
+    headers: {
+      Authorization: `Bearer ${getCookie("admin_token")}`,
     },
   });
   isLoadingCreateBuilderType.value = false;
@@ -437,6 +443,9 @@ async function handleCreateBuilderValue(formData) {
   const { data } = await useFetch(`${baseURL}/builder_value`, {
     method: "POST",
     body: formData,
+    headers: {
+      Authorization: `Bearer ${getCookie("admin_token")}`,
+    },
   });
   isLoadingCreateBuilderValue.value = false;
   if (!data.value) return;
@@ -475,6 +484,9 @@ async function handleUpdateBuilderValue() {
       body: {
         name: builderValueNameUpdate.value,
       },
+      headers: {
+        Authorization: `Bearer ${getCookie("admin_token")}`,
+      },
     }
   );
   if (!data.value) return;
@@ -491,7 +503,12 @@ async function handleDeleteBuilderValue(builderValueId) {
   isLoadingDeleteBuilderValue.value = true;
   const { data } = await useFetch(
     `${baseURL}/builder_value/${builderValueId}`,
-    { method: "DELETE" }
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${getCookie("admin_token")}`,
+      },
+    }
   );
   isLoadingDeleteBuilderValue.value = false;
   if (!data.value) return;

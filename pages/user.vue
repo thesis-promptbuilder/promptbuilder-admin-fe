@@ -210,10 +210,6 @@ const isLoadingGet = ref(false);
 const page = ref(1);
 const size = ref(10);
 async function handleGetListUser() {
-  if (userStore.isLoadedListUser) {
-    listUser.value = userStore.listUser;
-    return;
-  }
   isLoadingGet.value = true;
   const { data } = await useFetch(`${baseURL}/admin/user`, {
     method: "GET",
