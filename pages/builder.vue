@@ -427,7 +427,7 @@ function handlePreprocessing() {
   new Compressor(file.value[0], {
     quality: 0.8,
     success(result) {
-      image = new File([result], "image");
+      image = new File([result], `${file.value[0].name}`);
       formData.append("image", image);
       formData.append("parent", builderTypeName.value);
       formData.append("name", builderValueName.value);
