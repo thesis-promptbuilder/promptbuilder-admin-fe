@@ -1,8 +1,7 @@
 <template>
-  <div class="text-h5 font-weight-bold">
-    <span class="text-primary-2">Admin</span> Dashboard
+  <div class="w-100 d-flex justify-center">
+    <v-progress-circular indeterminate color="primary-2"></v-progress-circular>
   </div>
-  <div class="d-flex mt-4">admin</div>
 </template>
 
 <script setup></script>

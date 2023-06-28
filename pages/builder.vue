@@ -143,7 +143,7 @@
           label="Name"
           hide-details
           bg-color="bg-1"
-          @keydown.prevent.enter="handleCreateBuilderValue"
+          @keydown.prevent.enter="handlePreprocessing"
         ></v-text-field>
         <div
           class="w-100 mt-4 rounded-lg d-flex justify-center align-center pointer"
@@ -180,7 +180,7 @@
           variant="flat"
           color="info"
           :loading="isLoadingCreateBuilderValue"
-          @click="handleCreateBuilderValue"
+          @click="handlePreprocessing"
         >
           Create
         </v-btn>
@@ -301,6 +301,8 @@
 <script setup>
 import { useStyleStore } from "~/stores/Style";
 import { actions } from "~/utils/common";
+import Compressor from "compressorjs";
+
 const config = useRuntimeConfig();
 const baseURL = `${config.public.baseURL}`;
 
@@ -411,12 +413,27 @@ const isShowCreateBuilderValue = ref(false);
 const isLoadingCreateBuilderValue = ref(false);
 const builderValueName = ref("");
 
-async function handleCreateBuilderValue() {
+function handlePreprocessing() {
   isLoadingCreateBuilderValue.value = true;
+
   const formData = new FormData();
-  formData.append("image", file.value[0]);
-  formData.append("parent", builderTypeName.value);
-  formData.append("name", builderValueName.value);
+  let image = null;
+  new Compressor(file.value[0], {
+    quality: 0.8,
+    success(result) {
+      image = new File([result], "image");
+      formData.append("image", image);
+      formData.append("parent", builderTypeName.value);
+      formData.append("name", builderValueName.value);
+      handleCreateBuilderValue(formData);
+    },
+    error(err) {
+      console.log(err.message);
+    },
+  });
+}
+
+async function handleCreateBuilderValue(formData) {
   const { data } = await useFetch(`${baseURL}/builder_value`, {
     method: "POST",
     body: formData,

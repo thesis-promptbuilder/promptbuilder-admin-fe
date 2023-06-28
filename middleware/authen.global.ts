@@ -6,6 +6,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
     const isLogin = getCookie("admin_token");
     const expiredTime = getCookie("admin_expire");
 
+    if (to.fullPath === "/") return navigateTo("/user");
+
     if (!isLogin || (isLogin && checkIsExpired(expiredTime))) {
       if (to.fullPath === "/login") return;
       return navigateTo("/login");
