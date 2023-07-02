@@ -28,8 +28,8 @@
             <td>{{ user.username }}</td>
             <td>{{ user.gmail }}</td>
             <td>{{ user.role }}</td>
-            <td>{{ user.is_ban }}</td>
-            <td>{{ user.is_activate }}</td>
+            <td>{{ user.is_ban ? "yes" : "no" }}</td>
+            <!-- <td>{{ user.is_activate }}</td> -->
             <td>
               <v-menu>
                 <template v-slot:activator="{ props }">
@@ -185,6 +185,14 @@
           :items="['admin', 'user']"
           label="Role"
         ></v-select>
+        <v-select
+          v-model="bannedUpdate"
+          variant="outlined"
+          bg-color="bg-1"
+          density="compact"
+          :items="['yes', 'no']"
+          label="Banned"
+        ></v-select>
       </v-card-text>
       <v-card-actions class="d-flex justify-end">
         <v-btn variant="text" @click="isShowUpdate = false"> Cancel </v-btn>
@@ -242,7 +250,7 @@ const headers = ref([
   "Gmail",
   "Role",
   "Banned",
-  "Activated",
+  // "Activated",
   "Action",
 ]);
 
@@ -311,18 +319,21 @@ const usernameUpdate = ref("");
 const gmailUpdate = ref("");
 const passwordUpdate = ref("");
 const roleUpdate = ref("");
+const bannedUpdate = ref("");
 async function handleUpdateUser() {
   const userId = selectedUser.value.id;
+  const updateData = {
+    username: usernameUpdate.value,
+    gmail: gmailUpdate.value,
+    role: roleUpdate.value,
+    is_ban: bannedUpdate.value === "yes",
+    // is_activate: true,
+  };
+  if (passwordUpdate.value)
+    updateData["password"] = sha256(passwordUpdate.value);
   const { data } = await useFetch(`${baseURL}/admin/user/${userId}`, {
     method: "PUT",
-    body: {
-      username: usernameUpdate.value,
-      gmail: gmailUpdate.value,
-      password: sha256(passwordUpdate.value),
-      role: roleUpdate.value,
-      // is_ban: false,
-      // is_activate: true,
-    },
+    body: updateData,
     headers: {
       Authorization: `Bearer ${getCookie("admin_token")}`,
     },
@@ -343,6 +354,7 @@ function handleAction(action) {
     usernameUpdate.value = selectedUser.value.username;
     gmailUpdate.value = selectedUser.value.gmail;
     roleUpdate.value = selectedUser.value.role;
+    bannedUpdate.value = selectedUser.value.is_ban ? "yes" : "no";
     isShowUpdate.value = true;
   }
   if (action.value === "delete") {

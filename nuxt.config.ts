@@ -11,6 +11,13 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: "Admin",
+      link: [
+        {
+          rel: "icon",
+          type: "image/png",
+          href: "favicon.png",
+        },
+      ],
     },
   },
   runtimeConfig: {
