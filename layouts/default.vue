@@ -74,6 +74,11 @@ const listItems = [
     route: "/builder",
     prependIcon: "mdi-wrench-outline",
   },
+  {
+    title: "Image",
+    route: "/image",
+    prependIcon: "mdi-image-outline",
+  },
   // {
   //   title: "Statistics",
   //   route: "/statistics",
@@ -86,6 +91,7 @@ function handleActionItem(item) {
 }
 
 function handleLogout() {
+  userStore.reset();
   document.cookie = "admin_token=;";
   document.cookie = "admin_expire=;";
   setTimeout(() => {

@@ -29,7 +29,7 @@
             <td>{{ user.gmail }}</td>
             <td>{{ user.role }}</td>
             <td>{{ user.is_ban ? "yes" : "no" }}</td>
-            <!-- <td>{{ user.is_activate }}</td> -->
+            <td>{{ user.is_activate }}</td>
             <td>
               <v-menu>
                 <template v-slot:activator="{ props }">
@@ -59,7 +59,7 @@
       <div class="text-center">
         <v-pagination
           v-model="page"
-          :length="10"
+          :length="length"
           density="comfortable"
           class="mt-1"
           active-color="primary"
@@ -193,6 +193,14 @@
           :items="['yes', 'no']"
           label="Banned"
         ></v-select>
+        <v-select
+          v-model="activatedUpdate"
+          variant="outlined"
+          bg-color="bg-1"
+          density="compact"
+          :items="['yes', 'no']"
+          label="Activated"
+        ></v-select>
       </v-card-text>
       <v-card-actions class="d-flex justify-end">
         <v-btn variant="text" @click="isShowUpdate = false"> Cancel </v-btn>
@@ -217,6 +225,8 @@ const listUser = ref([]);
 const isLoadingGet = ref(false);
 const page = ref(1);
 const size = ref(10);
+const length = ref(10);
+
 async function handleGetListUser() {
   isLoadingGet.value = true;
   const { data } = await useFetch(`${baseURL}/admin/user`, {
@@ -231,10 +241,11 @@ async function handleGetListUser() {
   });
   isLoadingGet.value = false;
   if (!data.value) return;
-  const { result, code, msg } = data.value;
+  const { result, count, code, msg } = data.value;
   if (code === CODE_SUCCESS) {
     listUser.value = result;
     userStore.setListUser(result);
+    length.value = parseInt(count / size.value) + 1;
   }
 }
 
@@ -250,7 +261,7 @@ const headers = ref([
   "Gmail",
   "Role",
   "Banned",
-  // "Activated",
+  "Activated",
   "Action",
 ]);
 
@@ -320,6 +331,8 @@ const gmailUpdate = ref("");
 const passwordUpdate = ref("");
 const roleUpdate = ref("");
 const bannedUpdate = ref("");
+const activatedUpdate = ref("");
+
 async function handleUpdateUser() {
   const userId = selectedUser.value.id;
   const updateData = {
@@ -327,6 +340,7 @@ async function handleUpdateUser() {
     gmail: gmailUpdate.value,
     role: roleUpdate.value,
     is_ban: bannedUpdate.value === "yes",
+    is_activate: activatedUpdate.value === "yes",
     // is_activate: true,
   };
   if (passwordUpdate.value)
@@ -355,6 +369,7 @@ function handleAction(action) {
     gmailUpdate.value = selectedUser.value.gmail;
     roleUpdate.value = selectedUser.value.role;
     bannedUpdate.value = selectedUser.value.is_ban ? "yes" : "no";
+    activatedUpdate.value = selectedUser.value.is_activate ? "yes" : "no";
     isShowUpdate.value = true;
   }
   if (action.value === "delete") {

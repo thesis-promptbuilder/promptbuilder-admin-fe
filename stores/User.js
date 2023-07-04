@@ -21,5 +21,10 @@ export const useUserStore = defineStore("userStore", {
       this.isLoadedListUser = true;
       this.listUser = listUser;
     },
+    reset() {
+      this.username = "";
+      this.id = "";
+      this.gmail = "";
+    },
   },
 });
