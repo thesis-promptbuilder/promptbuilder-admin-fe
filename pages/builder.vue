@@ -329,8 +329,6 @@ async function handleGetBuilderType() {
   const { result, code, msg } = data.value;
   if (code === CODE_SUCCESS) {
     styleStore.setListBuilderType(result);
-    builderTypeName.value = "Artists";
-    styleStore.setListBuilderType(result);
   }
 }
 
