@@ -3,7 +3,7 @@
     <span class="text-primary-2">Builder</span> Management
   </div>
   <div class="mt-4">
-    <div class="d-flex align-center w-50">
+    <div class="d-flex align-center w-75">
       <v-select
         v-model="parentType"
         :items="listParentType"
@@ -128,7 +128,7 @@
   </div>
   <v-dialog v-model="isShowCreateBuilderValue" width="auto" persistent>
     <v-card>
-      <v-card-text style="min-width: 25vw">
+      <v-card-text style="min-width: 30vw">
         <div class="text-h6 font-weight-bold">
           <span class="text-info">Create builder value</span>
         </div>
@@ -196,7 +196,7 @@
   </v-dialog>
   <v-dialog v-model="isShowUpdateBuilderValue" width="auto" persistent>
     <v-card>
-      <v-card-text style="min-width: 25vw">
+      <v-card-text style="min-width: 30vw">
         <div class="text-h6 font-weight-bold">
           <span class="text-info">Update builder value</span>
         </div>
@@ -330,22 +330,13 @@ const listParentType = ref([
   "Design Styles",
   "Digital",
   "Artists",
-  "Drawing and Art Mediums",
-  "Colors and Palettes",
-  "Materials",
-  "Objects",
-  "Material Properties",
+  "Colors",
   "Lighting",
+  "Materials",
   "SFX and Shaders",
-  "Dimensionality",
-  "Nature and Animals",
-  "Geography and Culture",
-  "Outer Space",
-  "Camera, Film and Lenses",
   "Perspective",
-  "Geometry",
-  "Structural Modification",
-  "Intangibles",
+  "Geography and Culture",
+  "Camera, Film and Lenses",
 ]);
 const parentType = ref("");
 
@@ -434,7 +425,7 @@ const length = ref(10);
 const isLoadingGetBuilderValue = ref(false);
 async function handleGetBuilderValue() {
   isLoadingGetBuilderValue.value = true;
-  const { data } = await useFetch(`${baseURL}/builder_value`, {
+  const { data } = await useFetch(`${baseURL}/admin/builder_value`, {
     method: "GET",
     params: {
       page: page.value - 1,
