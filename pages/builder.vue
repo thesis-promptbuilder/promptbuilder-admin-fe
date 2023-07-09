@@ -4,7 +4,14 @@
   </div>
   <div class="mt-4">
     <div class="d-flex align-center w-50">
-      Style
+      <v-select
+        v-model="parentType"
+        :items="listParentType"
+        variant="outlined"
+        density="compact"
+        bg-color="bg-1"
+        hide-details
+      ></v-select>
       <span class="mx-2">-</span>
       <v-select
         v-model="builderTypeName"
@@ -239,13 +246,23 @@
           <span class="text-info">Create builder type</span>
         </div>
         <v-text-field
+          v-model.trim="parentType"
+          autofocus
+          class="mt-4"
+          variant="outlined"
+          density="compact"
+          label="Parent Type"
+          readonly
+          bg-color="bg-3"
+          hide-details
+        ></v-text-field>
+        <v-text-field
           v-model.trim="builderTypeNewName"
           autofocus
           class="mt-4"
           variant="outlined"
           density="compact"
           label="Name"
-          @keydown.prevent.enter="handleCreateBuilderType"
         ></v-text-field>
       </v-card-text>
       <v-card-actions class="d-flex justify-end">
@@ -308,13 +325,34 @@ const baseURL = `${config.public.baseURL}`;
 
 const styleStore = useStyleStore();
 
-const parentType = ref("Style");
+const listParentType = ref([
+  "Themes",
+  "Design Styles",
+  "Digital",
+  "Artists",
+  "Drawing and Art Mediums",
+  "Colors and Palettes",
+  "Materials",
+  "Objects",
+  "Material Properties",
+  "Lighting",
+  "SFX and Shaders",
+  "Dimensionality",
+  "Nature and Animals",
+  "Geography and Culture",
+  "Outer Space",
+  "Camera, Film and Lenses",
+  "Perspective",
+  "Geometry",
+  "Structural Modification",
+  "Intangibles",
+]);
+const parentType = ref("");
 
 const builderTypeName = ref("");
 
 async function handleGetBuilderType() {
   if (styleStore.isLoadedBuilderType) {
-    listBuilderType.value = styleStore.listBuilderType;
     return;
   }
   const { data } = await useFetch(`${baseURL}/builder_type`, {
@@ -332,11 +370,12 @@ async function handleGetBuilderType() {
   }
 }
 
-onMounted(() => {
-  nextTick(() => {
+watch(
+  () => parentType.value,
+  () => {
     handleGetBuilderType();
-  });
-});
+  }
+);
 
 const isShowDeleteBuilderType = ref(false);
 async function handleDeleteBuilderType() {
@@ -369,7 +408,6 @@ async function handleCreateBuilderType() {
     body: {
       parent: parentType.value,
       name: builderTypeNewName.value,
-      short_name: "",
     },
     headers: {
       Authorization: `Bearer ${getCookie("admin_token")}`,
