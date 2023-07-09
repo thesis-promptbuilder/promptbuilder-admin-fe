@@ -6,7 +6,7 @@
     <div class="d-flex align-center w-75">
       <v-select
         v-model="parentType"
-        :items="listParentType"
+        :items="listParentType.map((item) => item.name).sort()"
         variant="outlined"
         density="compact"
         bg-color="bg-1"
@@ -14,6 +14,7 @@
       ></v-select>
       <span class="mx-2">-</span>
       <v-select
+        v-if="!isLoadingGetBuilderType"
         v-model="builderTypeName"
         :items="styleStore.listBuilderType.map((item) => item.name).sort()"
         variant="outlined"
@@ -326,26 +327,21 @@ const baseURL = `${config.public.baseURL}`;
 const styleStore = useStyleStore();
 
 const listParentType = ref([
-  "Themes",
-  "Design Styles",
-  "Digital",
-  "Artists",
-  "Colors",
-  "Lighting",
-  "Materials",
-  "SFX and Shaders",
-  "Perspective",
-  "Geography and Culture",
-  "Camera, Film and Lenses",
+  { name: "Artists", icon: "mdi-brush-outline" },
+  { name: "Camera, Film And Lenses", icon: "mdi-camera-outline" },
+  { name: "Colors", icon: "mdi-palette-outline" },
+  { name: "Design Styles", icon: "mdi-pencil-ruler" },
+  { name: "Digital", icon: "mdi-television" },
+  { name: "Lighting", icon: "mdi-lightbulb-outline" },
+  { name: "Themes", icon: "mdi-theme-light-dark" },
 ]);
 const parentType = ref("");
 
 const builderTypeName = ref("");
 
+const isLoadingGetBuilderType = ref(false);
 async function handleGetBuilderType() {
-  if (styleStore.isLoadedBuilderType) {
-    return;
-  }
+  isLoadingGetBuilderType.value = true;
   const { data } = await useFetch(`${baseURL}/builder_type`, {
     method: "GET",
     params: {
@@ -354,6 +350,7 @@ async function handleGetBuilderType() {
       parent: parentType.value,
     },
   });
+  isLoadingGetBuilderType.value = false;
   if (!data.value) return;
   const { result, code, msg } = data.value;
   if (code === CODE_SUCCESS) {
@@ -373,12 +370,14 @@ async function handleDeleteBuilderType() {
   const builderTypeId = styleStore.listBuilderType.filter(
     (item) => item.name === builderTypeName.value
   )[0]["id"];
+  isLoadingGetBuilderType.value = true;
   const { data } = await useFetch(`${baseURL}/builder_type/${builderTypeId}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${getCookie("admin_token")}`,
     },
   });
+  isLoadingGetBuilderType.value = false;
   if (!data.value) return;
   const { result, code, msg } = data.value;
   if (code === CODE_SUCCESS) {
