@@ -9,7 +9,12 @@
   <v-table class="bg-bg-1" fixed-header height="65vh">
     <thead>
       <tr>
-        <th v-for="(header, idx) in headers" :key="idx" class="text-left">
+        <th
+          v-for="(header, idx) in headers"
+          :key="idx"
+          class="text-left"
+          :class="[header === 'Image' ? 'text-center' : '']"
+        >
           <v-btn
             v-if="header === 'Action'"
             prepend-icon="mdi-plus"
