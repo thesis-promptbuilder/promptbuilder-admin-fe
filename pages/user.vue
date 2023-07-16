@@ -30,6 +30,7 @@
             <td>{{ user.role }}</td>
             <td>{{ user.is_ban ? "yes" : "no" }}</td>
             <td>{{ user.is_activate }}</td>
+            <td>{{ user.verify_code }}</td>
             <td>
               <v-menu>
                 <template v-slot:activator="{ props }">
@@ -262,6 +263,7 @@ const headers = ref([
   "Role",
   "Banned",
   "Activated",
+  "Code",
   "Action",
 ]);
 
