@@ -74,11 +74,11 @@ const listItems = [
     route: "/builder",
     prependIcon: "mdi-wrench-outline",
   },
-  {
-    title: "Image",
-    route: "/image",
-    prependIcon: "mdi-image-outline",
-  },
+  // {
+  //   title: "Image",
+  //   route: "/image",
+  //   prependIcon: "mdi-image-outline",
+  // },
   // {
   //   title: "Statistics",
   //   route: "/statistics",
