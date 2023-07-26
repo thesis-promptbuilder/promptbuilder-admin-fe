@@ -150,7 +150,9 @@ watch(
 );
 
 const builderTypeID = computed(() => {
-  return styleStore.listBuilderType.filter((item) => item.name)[0]?.id;
+  return styleStore.listBuilderType.filter(
+    (item) => item.name === builderType.value
+  )[0]?.id;
 });
 
 onMounted(() => {
